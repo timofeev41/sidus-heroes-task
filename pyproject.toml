@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "sidus-heroes-task"
+version = "1.0.0"
+description = ""
+authors = ["Nikolas <timofeevnik41@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.79.0"
+
+[tool.poetry.dev-dependencies]
+black = "^22.6.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
