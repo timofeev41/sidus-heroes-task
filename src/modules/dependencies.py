@@ -10,7 +10,7 @@ async def generate_token(credentials: models.Credentials) -> models.Token:
     return models.Token(token=credentials.login + "__" + credentials.password)
 
 
-async def read_token(token: str = Header(), db: Session = Depends(get_db)) -> schemas.UserPassword:
+async def read_token(token: str = Header(), db: Session = Depends(get_db)) -> schemas.UserPrivateInformation:
     try:
         user = crud.authorize_user(
             db, credentials=models.Credentials(login=token.split("__")[0], password=token.split("__")[1])

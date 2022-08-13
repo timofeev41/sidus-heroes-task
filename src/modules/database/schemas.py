@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pydantic import BaseModel
 
 
@@ -8,11 +10,19 @@ class User(BaseModel):
         orm_mode = True
 
 
-class UserEditable(User):
+class UserEditableInformation(BaseModel):
     username: str
     full_name: str
     details: str
 
 
-class UserPassword(UserEditable):
+class UserPassword(UserEditableInformation):
     password: str
+
+
+class UserPublicInformation(User, UserEditableInformation):
+    pass
+
+
+class UserPrivateInformation(User, UserPassword):
+    pass

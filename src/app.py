@@ -1,3 +1,5 @@
+from typing import no_type_check
+
 import aioredis
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi_cache import FastAPICache
@@ -13,22 +15,24 @@ models.Base.metadata.create_all(bind=database.engine)
 app = FastAPI()
 
 
-@app.get("/users", response_model=list[schemas.UserEditable])
+@app.get("/users", response_model=list[schemas.UserPublicInformation])
 async def get_users(
     skip: int = 0, limit: int = 100, db: database.Session = Depends(database.get_db)
-) -> list[schemas.UserPassword]:
-    users = crud.get_users(db)
+) -> list[schemas.UserPublicInformation]:
+    users: list[schemas.UserPublicInformation] = crud.get_users(db)
     return users
 
 
-@app.get("/users/{username}", response_model=schemas.UserEditable)
+@app.get("/users/{username}", response_model=schemas.UserPublicInformation)
 @cache(namespace="user", expire=60)
-async def get_concrete_user(username: str, db: database.Session = Depends(database.get_db)) -> schemas.User | None:
+async def get_concrete_user(
+    username: str, db: database.Session = Depends(database.get_db)
+) -> schemas.UserPublicInformation | None:
     user = crud.get_user_by_username(db, username=username)
     return user
 
 
-@app.post("/users", response_model=schemas.UserPassword)
+@app.post("/users", response_model=schemas.UserPublicInformation)
 async def create_user(
     user: schemas.UserPassword, db: database.Session = Depends(database.get_db)
 ) -> schemas.UserPassword:
@@ -48,13 +52,13 @@ async def get_token(credentials: Credentials, db: database.Session = Depends(dat
 
 @app.patch("/me")
 async def edit_user(
-    new_data: schemas.UserPassword,
+    new_data: schemas.UserEditableInformation,
     user: schemas.UserPassword = Depends(read_token),
     db: database.Session = Depends(database.get_db),
-):
+) -> dict[str, str]:
     await FastAPICache.clear(namespace="user")
-    db_user = crud.edit_user(db, username=user.username, new_data=new_data)
-    return db_user
+    crud.edit_user(db, username=user.username, new_data=new_data)
+    return {"status": f"data for user {user.username} updated"}
 
 
 @app.get("/me")
@@ -63,6 +67,7 @@ async def get_my_profile(user: schemas.UserPassword = Depends(read_token)) -> sc
 
 
 @app.on_event("startup")
-async def startup():
+@no_type_check
+async def startup() -> None:
     redis = aioredis.from_url("redis://redis_cache", encoding="utf8", decode_responses=True)
-    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")  # type: ignore
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")

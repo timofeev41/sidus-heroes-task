@@ -16,7 +16,17 @@ psycopg2 = "^2.9.3"
 [tool.poetry.dev-dependencies]
 black = "^22.6.0"
 isort = "^5.10.1"
+mypy = "^0.971"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+exclude = "test*"
+strict = true
+ignore_missing_imports  = true
+allow_untyped_decorators = true
+warn_incomplete_stub = false
+implicit_reexport = true
+disallow_subclassing_any = true
