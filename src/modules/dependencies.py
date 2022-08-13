@@ -1,10 +1,9 @@
-from fastapi import Depends, HTTPException, Header
+from fastapi import Depends, Header, HTTPException
+from sqlalchemy.orm import Session
 
-from .database.database import get_db
 from . import models
 from .database import crud, schemas
-
-from sqlalchemy.orm import Session
+from .database.database import get_db
 
 
 async def generate_token(credentials: models.Credentials) -> models.Token:

@@ -1,12 +1,12 @@
 import aioredis
-from fastapi import FastAPI, Depends, HTTPException
-from .modules.dependencies import generate_token, read_token
-from .modules.models import Token, Credentials
-
-from .modules.database import crud, database, models, schemas
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from fastapi_cache.decorator import cache
+
+from .modules.database import crud, database, models, schemas
+from .modules.dependencies import generate_token, read_token
+from .modules.models import Credentials, Token
 
 models.Base.metadata.create_all(bind=database.engine)
 

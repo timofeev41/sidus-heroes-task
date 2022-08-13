@@ -2,10 +2,7 @@ from sqlalchemy import update
 from sqlalchemy.orm import Session
 
 from ..models import Credentials
-
-from . import models
-
-from . import schemas
+from . import models, schemas
 
 
 def get_user(db: Session, user_id: int) -> schemas.UserEditable | None:

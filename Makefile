@@ -1,2 +1,2 @@
 fmt:
-	black -l 120 .
+	isort . && black -l 120 . 
