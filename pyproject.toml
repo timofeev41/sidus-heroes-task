@@ -9,6 +9,9 @@ python = "^3.10"
 fastapi = "^0.79.0"
 SQLAlchemy = "^1.4.40"
 uvicorn = "^0.18.2"
+fastapi-cache2 = {extras = ["redis"], version = "^0.1.9"}
+aioredis = "^2.0.1"
+psycopg2 = "^2.9.3"
 
 [tool.poetry.dev-dependencies]
 black = "^22.6.0"

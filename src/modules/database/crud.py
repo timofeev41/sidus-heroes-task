@@ -1,7 +1,11 @@
 from sqlalchemy import update
 from sqlalchemy.orm import Session
 
-from . import models, schemas
+from ..models import Credentials
+
+from . import models
+
+from . import schemas
 
 
 def get_user(db: Session, user_id: int) -> schemas.UserEditable | None:
@@ -12,7 +16,15 @@ def get_user_by_username(db: Session, username: str) -> schemas.UserEditable | N
     return db.query(models.User).filter(models.User.username == username).first()
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
+def authorize_user(db: Session, credentials: Credentials) -> schemas.UserPassword | None:
+    return (
+        db.query(models.User)
+        .filter(models.User.username == credentials.login, models.User.password == credentials.password + "1234")
+        .first()
+    )
+
+
+def get_users(db: Session, skip: int = 0, limit: int = 100) -> list[schemas.UserPassword]:
     return db.query(models.User).offset(skip).limit(limit).all()
 
 

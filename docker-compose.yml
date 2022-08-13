@@ -9,6 +9,17 @@ services:
     volumes:
       - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
+    links:
+      - redis_cache
+      - postgres
+
+  redis_cache:
+    image: redis:6.2-alpine
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning
+    volumes: 
+      - cache:/data
 
   postgres:
     image: postgres:13.3
@@ -18,3 +29,7 @@ services:
       POSTGRES_PASSWORD: "postgres"
     ports:
       - "5432:5432"
+
+volumes:
+  cache:
+    driver: local
