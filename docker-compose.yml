@@ -1,0 +1,20 @@
+version: "3"
+services:
+  crudapp:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - "5008:8000"
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+
+  postgres:
+    image: postgres:13.3
+    environment:
+      POSTGRES_DB: "testdb"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5432:5432"

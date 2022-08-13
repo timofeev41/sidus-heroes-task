@@ -6,7 +6,7 @@ models.Base.metadata.create_all(bind=database.engine)
 app = FastAPI()
 
 
-@app.get("/users", response_model=list[schemas.User])
+@app.get("/users", response_model=list[schemas.UserEditable])
 async def get_users(
     skip: int = 0, limit: int = 100, db: database.Session = Depends(database.get_db)
 ) -> list[schemas.User]:
@@ -14,7 +14,7 @@ async def get_users(
     return users
 
 
-@app.get("/users/{username}", response_model=schemas.User)
+@app.get("/users/{username}", response_model=schemas.UserEditable)
 async def get_concrete_user(username: str, db: database.Session = Depends(database.get_db)) -> schemas.User | None:
     user = crud.get_user_by_username(db, username=username)
     return user
@@ -31,5 +31,6 @@ async def create_user(
 
 
 @app.patch("/users/{username}")
-async def edit_user(username: str) -> None:
-    pass
+async def edit_user(username: str, new_data: schemas.UserPassword, db: database.Session = Depends(database.get_db)):
+    db_user = crud.edit_user(db, username=username, new_data=new_data)
+    return db_user

@@ -1,13 +1,14 @@
+from sqlalchemy import update
 from sqlalchemy.orm import Session
 
 from . import models, schemas
 
 
-def get_user(db: Session, user_id: int):
+def get_user(db: Session, user_id: int) -> schemas.UserEditable | None:
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
-def get_user_by_username(db: Session, username: str):
+def get_user_by_username(db: Session, username: str) -> schemas.UserEditable | None:
     return db.query(models.User).filter(models.User.username == username).first()
 
 
@@ -23,4 +24,18 @@ def create_user(db: Session, user: schemas.UserPassword):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    return db_user
+
+
+def edit_user(db: Session, username: str, new_data: schemas.UserEditable):
+    db_user = get_user_by_username(db, username=username)
+    if not db_user:
+        raise ValueError("User not found, nothing to update")
+
+    # if nothing to update
+    if db_user == new_data:
+        return db_user
+
+    db.query(models.User).filter(models.User.username == username).update(new_data.dict())
+    db.commit()
     return db_user
