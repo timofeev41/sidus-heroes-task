@@ -59,3 +59,4 @@ def edit_user(db: Session, username: str, new_data: schemas.UserEditableInformat
 
 def purge_user(db: Session, username: str) -> None:
     db.query(models.User).filter(models.User.username == username).delete()
+    db.commit()

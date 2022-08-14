@@ -3,3 +3,6 @@ fmt:
 
 check:
 	mypy .
+
+tests:
+	pytest .

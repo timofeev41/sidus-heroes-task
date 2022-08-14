@@ -66,6 +66,15 @@ async def get_my_profile(user: schemas.UserPassword = Depends(read_token)) -> sc
     return user
 
 
+@app.delete("/me")
+async def delete_my_profile(
+    user: schemas.UserPassword = Depends(read_token),
+    db: database.Session = Depends(database.get_db),
+) -> dict[str, str]:
+    crud.purge_user(db, username=user.username)
+    return {"status": f"user {user.username} was deleted from db"}
+
+
 @app.on_event("startup")
 @no_type_check
 async def startup() -> None:
