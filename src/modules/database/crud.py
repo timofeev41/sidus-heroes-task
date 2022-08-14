@@ -1,3 +1,5 @@
+from asyncio.log import logger
+
 from pydantic import parse_obj_as
 from sqlalchemy.orm import Session
 
@@ -11,9 +13,10 @@ def get_user(db: Session, user_id: int) -> schemas.UserPrivateInformation | None
 
 
 def get_user_by_username(db: Session, username: str) -> schemas.UserPublicInformation | None:
-    return parse_obj_as(
-        schemas.UserPublicInformation, db.query(models.User).filter(models.User.username == username).first()
+    result: schemas.UserPublicInformation | None = (
+        db.query(models.User).filter(models.User.username == username).first()
     )
+    return result
 
 
 def authorize_user(db: Session, credentials: Credentials) -> schemas.UserPrivateInformation | None:
@@ -52,3 +55,7 @@ def edit_user(db: Session, username: str, new_data: schemas.UserEditableInformat
 
     db.query(models.User).filter(models.User.username == username).update(new_data.dict())
     db.commit()
+
+
+def purge_user(db: Session, username: str) -> None:
+    db.query(models.User).filter(models.User.username == username).delete()

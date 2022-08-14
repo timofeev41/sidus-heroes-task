@@ -35,7 +35,7 @@ async def get_concrete_user(
 @app.post("/users", response_model=schemas.UserPublicInformation)
 async def create_user(
     user: schemas.UserPassword, db: database.Session = Depends(database.get_db)
-) -> schemas.UserPassword:
+) -> schemas.UserPublicInformation:
     db_user = crud.get_user_by_username(db, username=user.username)
     if db_user:
         raise HTTPException(status_code=400, detail=f"User {user.username} already registered")
